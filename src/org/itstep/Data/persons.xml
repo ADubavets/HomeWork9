@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persons>
+    <person>
+        <family>Дубовец</family>
+        <name>Андрей</name>
+        <patronymic>Федорович</patronymic>
+        <nickname>я</nickname>
+        <birthday>1973-10-28T00:00:00+03:00</birthday>
+        <eMail>daf_73@mail.ru</eMail>
+        <phoneMobil>29-367-53-75</phoneMobil>
+        <phoneHome>68-28-39</phoneHome>
+        <phoneWork>159-159</phoneWork>
+        <phoneFax>-</phoneFax>
+    </person>
+</persons>
