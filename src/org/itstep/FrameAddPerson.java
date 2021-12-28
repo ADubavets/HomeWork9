@@ -3,15 +3,14 @@ package org.itstep;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.text.ParseException;
 import java.util.regex.Pattern;
+
+import static org.itstep.MainForm.tableModel;
+import static org.itstep.TelephoneBook.persons;
 
 public class FrameAddPerson implements ActionListener {
     private final JFrame frame;
@@ -21,7 +20,6 @@ public class FrameAddPerson implements ActionListener {
     private final JTextField nameEdit;
     private final JTextField familyEdit;
     private final JTextField patronymicEdit;
-    private final JTextField nickNameEdit;
     private final JTextField birthdayEdit;
     private final JTextField phoneNumberHomeEdit;
     private final JTextField phoneNumberWorkEdit;
@@ -77,35 +75,13 @@ public class FrameAddPerson implements ActionListener {
         patronymicEdit = new JTextField();
         patronymicEdit.setBounds(85, 100, 140, 20);
         frame.add(patronymicEdit);
-        // Nick
-        JLabel nickNameLabel = new JLabel("Прозвище:");
-        nickNameLabel.setBounds(20, 130, 100, 20);
-        frame.add(nickNameLabel);
-        nickNameEdit = new JTextField();
-        nickNameEdit.setBounds(85, 130, 140, 20);
-        nickNameEdit.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changed();
-            }
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changed();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                changed();
-            }
-        });
-        frame.add(nickNameEdit);
         // Birthday
         JLabel birthdayLabel = new JLabel("День рождения");
-        birthdayLabel.setBounds(20, 160, 100, 20);
+        birthdayLabel.setBounds(20, 130, 100, 20);
         frame.add(birthdayLabel);
         birthdayEdit = new JTextField();
-        birthdayEdit.setBounds(125, 160, 100, 20);
+        birthdayEdit.setBounds(125, 130, 100, 20);
         birthdayEdit.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -125,24 +101,24 @@ public class FrameAddPerson implements ActionListener {
         frame.add(birthdayEdit);
         // домашний телефон
         JLabel phoneNumberHomeLabel = new JLabel("Дом. телефон:");
-        phoneNumberHomeLabel.setBounds(240, 40, 255, 20);
+        phoneNumberHomeLabel.setBounds(240, 70, 255, 20);
         frame.add(phoneNumberHomeLabel);
         phoneNumberHomeEdit = new JTextField();
-        phoneNumberHomeEdit.setBounds(340, 40, 140, 20);
+        phoneNumberHomeEdit.setBounds(340, 70, 140, 20);
         frame.add(phoneNumberHomeEdit);
         // рабочий телефон
         JLabel phoneNumberWorkLabel = new JLabel("Раб. телефон:");
-        phoneNumberWorkLabel.setBounds(240, 70, 255, 20);
+        phoneNumberWorkLabel.setBounds(240, 100, 255, 20);
         frame.add(phoneNumberWorkLabel);
         phoneNumberWorkEdit = new JTextField();
-        phoneNumberWorkEdit.setBounds(340, 70, 140, 20);
+        phoneNumberWorkEdit.setBounds(340, 100, 140, 20);
         frame.add(phoneNumberWorkEdit);
         // мобильный телефон
         JLabel phoneNumberMobilLabel = new JLabel("Моб. телефон:");
-        phoneNumberMobilLabel.setBounds(240, 100, 255, 20);
+        phoneNumberMobilLabel.setBounds(240, 40, 255, 20);
         frame.add(phoneNumberMobilLabel);
         phoneNumberMobilEdit = new JTextField();
-        phoneNumberMobilEdit.setBounds(340, 100, 140, 20);
+        phoneNumberMobilEdit.setBounds(340, 40, 140, 20);
         phoneNumberMobilEdit.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -179,55 +155,7 @@ public class FrameAddPerson implements ActionListener {
         addPerson.setBounds(40, 190, 200, 25);
         addPerson.setIcon(new ImageIcon("src/org/itstep/Icon/add user.png"));
         addPerson.setEnabled(false);
-        addPerson.addActionListener(e -> {
-            if (!check(
-                    phoneNumberMobilEdit.getText())) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Введите корректно номер телефона",
-                        "Внимание - ОШИБКА!!!",
-                        JOptionPane.INFORMATION_MESSAGE);
-                phoneNumberMobilEdit.requestFocus();
-            }
-            Person person;
-            try {
-                person = new Person(
-                        familyEdit.getText(),
-                        nameEdit.getText(),
-                        patronymicEdit.getText(),
-                        nickNameEdit.getText(),
-                        birthdayEdit.getText(),
-                        eMailEdit.getText(),
-                        phoneNumberMobilEdit.getText(),
-                        phoneNumberHomeEdit.getText(),
-                        phoneNumberWorkEdit.getText(),
-                        faxEdit.getText()
-                        );
-                Persons persons = new Persons();
-                persons.addPerson(person);
-                try {
-                    JAXBContext jaxbContext = JAXBContext.newInstance(Persons.class);
-                    Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-                    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE); // To format XML
-
-                    //Print XML String to file
-                    jaxbMarshaller.marshal(persons, new File("src/org/itstep/Data/persons.xml"));
-
-                } catch (JAXBException ex) {
-                    ex.printStackTrace();
-
-                }
-                MainForm.enterDataTable(persons);
-            } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Неправильно введена дата",
-                        "Внимание - ОШИБКА!!!",
-                        JOptionPane.ERROR_MESSAGE);
-                birthdayEdit.requestFocus();
-            }
-            frame.setVisible(false);
-        });
+        addPerson.addActionListener(this::actionAddPerson);
         frame.add(addPerson);
         // кнопка "Удалить"
         JButton noPerson = new JButton("Отмена");
@@ -254,14 +182,86 @@ public class FrameAddPerson implements ActionListener {
         new FrameAddPerson();
     }
 
-    static boolean check(String sCorrect) {
-        return Pattern.matches("[+]\\d{3}(\\d{2})\\d{3}-\\d{2}-\\d{2}", sCorrect);
+    static boolean checkMobil(String sCorrect) {
+        return Pattern.matches("[+]\\d{3}[(]\\d{2}[)]\\d{3}-\\d{2}-\\d{2}", sCorrect);
+    }
+
+    static boolean checkCity(String sCorrect) {
+        return !Pattern.matches("\\d{2}[-]\\d{2}[-]\\d{2}", sCorrect);
     }
 
     public void changed() {
         addPerson.setEnabled((!familyEdit.getText().equals("")) &&
-                (!nickNameEdit.getText().equals("")) &&
                 (!phoneNumberMobilEdit.getText().equals("")) &&
                 (!birthdayEdit.getText().equals("")));
+    }
+
+    private void actionAddPerson(ActionEvent e) {
+        if (!checkMobil(
+                phoneNumberMobilEdit.getText())) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Введите корректно номер телефона, например: +375(ХХ)ХХХ-ХХ-ХХ",
+                    "Внимание - КОРРЕКТИРОВКА!!!",
+                    JOptionPane.INFORMATION_MESSAGE);
+            phoneNumberMobilEdit.requestFocus();
+            return;
+        }
+        if (!phoneNumberHomeEdit.getText().equals(""))
+            if (checkCity(phoneNumberHomeEdit.getText())) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Введите корректно номер телефона, например: ХХ-ХХ-ХХ",
+                        "Внимание - КОРРЕКТИРОВКА!!!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                phoneNumberHomeEdit.requestFocus();
+                return;
+            }
+        if (!phoneNumberWorkEdit.getText().equals(""))
+            if (checkCity(phoneNumberWorkEdit.getText())) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Введите корректно номер телефона, например: ХХ-ХХ-ХХ",
+                        "Внимание - КОРРЕКТИРОВКА!!!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                phoneNumberWorkEdit.requestFocus();
+                return;
+            }
+        if (!faxEdit.getText().equals(""))
+            if (checkCity(faxEdit.getText())) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Введите корректно номер телефона, например: ХХ-ХХ-ХХ",
+                        "Внимание - КОРРЕКТИРОВКА!!!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                faxEdit.requestFocus();
+                return;
+            }
+        Person person;
+        try {
+            person = new Person(
+                    familyEdit.getText(),
+                    nameEdit.getText(),
+                    patronymicEdit.getText(),
+                    birthdayEdit.getText(),
+                    eMailEdit.getText(),
+                    phoneNumberMobilEdit.getText(),
+                    phoneNumberHomeEdit.getText(),
+                    phoneNumberWorkEdit.getText(),
+                    faxEdit.getText()
+            );
+            persons.addPerson(person);
+            persons.sortPersons();
+            MainForm.enterDataTable(tableModel);
+
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Неправильно введена дата или некорректный ввод даты. Например: ХХ.ХХ.ХХ",
+                    "Внимание - ОШИБКА!!!",
+                    JOptionPane.ERROR_MESSAGE);
+            birthdayEdit.requestFocus();
+        }
+        frame.setVisible(false);
     }
 }

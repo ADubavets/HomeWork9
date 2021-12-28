@@ -9,10 +9,11 @@ import java.util.*;
 @XmlRootElement(name = "person")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Person implements Serializable,Comparable {
+    private static int count = 0;
+    private final int id = ++count;
     private String family;
     private String name;
     private String patronymic;
-    private String nickname;
     private Date birthday;
     private String sBirthday;
     private String eMail;
@@ -20,14 +21,12 @@ public class Person implements Serializable,Comparable {
     private String phoneHome;
     private String phoneWork;
     private String phoneFax;
-    private List<String> phones;
 
     Person(){}
 
     public Person(String family,
                   String name,
                   String patronymic,
-                  String nickname,
                   String sBirthday,
                   String eMail,
                   String phoneMobil,
@@ -38,7 +37,6 @@ public class Person implements Serializable,Comparable {
         this.family = family;
         this.name = name;
         this.patronymic = patronymic;
-        this.nickname = nickname;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         this.birthday = dateFormat.parse(sBirthday);
         this.eMail = eMail;
@@ -47,24 +45,29 @@ public class Person implements Serializable,Comparable {
         this.phoneWork = phoneWork;
         this.phoneFax = phoneFax;
     }
-    public void setPhones(List<String> phones) {
-        this.phones = phones;
+    private int getCount(){
+        return count++;
     }
+
     public String toString(){
 
-        final StringBuffer buffer = new StringBuffer("");
-        buffer.append(family + "/");
-        buffer.append(name + "/");
-        buffer.append(patronymic + "/");
-        buffer.append(nickname + "/");
-        buffer.append(birthday + "/");
-        buffer.append(eMail + "/");
-        buffer.append(phoneMobil + "/");
-        buffer.append(phoneHome + "/");
-        buffer.append(phoneWork + "/");
-        buffer.append(phoneFax);
+        final StringBuffer buffer = new StringBuffer();
+        buffer.append(family);
+        if (!name.equals(""))
+            buffer.append(" ").append(name);
+        if (!patronymic.equals(""))
+            buffer.append(" ").append(patronymic);
+        buffer.append(". День рождения: ").append(birthday).append(";");
+        if (!eMail.equals(""))
+            buffer.append("; E-mail: ").append(eMail).append(";");
+        buffer.append(" моб. телефон: ").append(phoneMobil);
+        if (!phoneHome.equals(""))
+            buffer.append("; дом. телефон: ").append(phoneHome);
+        if (!phoneWork.equals(""))
+            buffer.append("; раб. телефон: ").append(phoneWork);
+        if (!phoneFax.equals(""))
+            buffer.append("; факс: ").append(phoneFax);
         return buffer.toString();
-
     }
 
     @Override
@@ -73,4 +76,43 @@ public class Person implements Serializable,Comparable {
         return result;
     }
 
+    public String getFamily() {
+        return family;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public String getsBirthday() {
+        return sBirthday;
+    }
+
+    public String geteMail() {
+        return eMail;
+    }
+
+    public String getPhoneMobil() {
+        return phoneMobil;
+    }
+
+    public String getPhoneHome() {
+        return phoneHome;
+    }
+
+    public String getPhoneWork() {
+        return phoneWork;
+    }
+
+    public String getPhoneFax() {
+        return phoneFax;
+    }
 }

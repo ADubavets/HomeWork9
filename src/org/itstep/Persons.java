@@ -6,12 +6,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 @XmlRootElement(name = "persons")
 @XmlAccessorType( XmlAccessType.FIELD)
-public class Persons implements Serializable {
+public class Persons extends ArrayList implements Serializable {
     @XmlElement(name = "person")
     private final List<Person> persons = new ArrayList<>();
 
@@ -27,4 +28,7 @@ public class Persons implements Serializable {
         return persons;
     }
 
+    public void sortPersons(){
+        Collections.sort(persons);
+    }
 }
