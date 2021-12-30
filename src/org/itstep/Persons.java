@@ -11,16 +11,16 @@ import java.util.List;
 
 
 @XmlRootElement(name = "persons")
-@XmlAccessorType( XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Persons extends ArrayList implements Serializable {
     @XmlElement(name = "person")
     private final List<Person> persons = new ArrayList<>();
 
-    public void addPerson(Person person){
+    public void addPerson(Person person) {
         persons.add(person);
     }
 
-    public void removePerson(Person person){
+    public void removePerson(Person person) {
         persons.remove(person);
     }
 
@@ -28,7 +28,7 @@ public class Persons extends ArrayList implements Serializable {
         return persons;
     }
 
-    public void sortPersons(){
+    public void sortPersons() {
         Collections.sort(persons);
     }
 }

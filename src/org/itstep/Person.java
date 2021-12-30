@@ -8,7 +8,7 @@ import java.util.*;
 
 @XmlRootElement(name = "person")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Person implements Serializable,Comparable {
+public class Person implements Serializable, Comparable {
     private static int count = 0;
     private final int id = ++count;
     private String family;
@@ -22,7 +22,8 @@ public class Person implements Serializable,Comparable {
     private String phoneWork;
     private String phoneFax;
 
-    Person(){}
+    Person() {
+    }
 
     public Person(String family,
                   String name,
@@ -45,11 +46,12 @@ public class Person implements Serializable,Comparable {
         this.phoneWork = phoneWork;
         this.phoneFax = phoneFax;
     }
-    private int getCount(){
+
+    private int getCount() {
         return count++;
     }
 
-    public String toString(){
+    public String toString() {
 
         final StringBuffer buffer = new StringBuffer();
         buffer.append(family);
@@ -96,7 +98,7 @@ public class Person implements Serializable,Comparable {
         return sBirthday;
     }
 
-    public String geteMail() {
+    public String getEmail() {
         return eMail;
     }
 
@@ -114,5 +116,25 @@ public class Person implements Serializable,Comparable {
 
     public String getPhoneFax() {
         return phoneFax;
+    }
+
+    public void seteMail(String eMail) {
+        this.eMail = eMail;
+    }
+
+    public void setPhoneMobil(String phoneMobil) {
+        this.phoneMobil = phoneMobil;
+    }
+
+    public void setPhoneHome(String phoneHome) {
+        this.phoneHome = phoneHome;
+    }
+
+    public void setPhoneWork(String phoneWork) {
+        this.phoneWork = phoneWork;
+    }
+
+    public void setPhoneFax(String phoneFax) {
+        this.phoneFax = phoneFax;
     }
 }

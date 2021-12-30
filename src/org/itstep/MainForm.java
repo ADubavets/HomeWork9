@@ -1,13 +1,15 @@
 package org.itstep;
 
 import javax.swing.*;
-
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static org.itstep.TelephoneBook.persons;
+import static org.itstep.TelephoneBook.writeXML;
 
 public class MainForm {
     public static JFrame mainFrame;
@@ -15,9 +17,10 @@ public class MainForm {
     public static JTextField nameEdit;
     public static JTextField familyEdit;
     public static JTextField patronymicEdit;
-    public static JTextField phoneNumberHomeEdit;
-    public static JTextField phoneNumberWorkEdit;
     public static JTextField phoneNumberMobilEdit;
+    public static JTextField phoneNumberWorkEdit;
+    public static JTextField phoneNumberHomeEdit;
+    public static JTextField faxEdit;
     public static JTextField eMailEdit;
     public static JTable phoneTable = new JTable();
     public static PersonTableModel tableModel;
@@ -27,7 +30,8 @@ public class MainForm {
         // Создание окна - объекта класса JFrame.
         // Текстовый аргумент конструктора задает имя окна:
         mainFrame = new JFrame("Телефонный справочник");
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Image icon = mainFrame.getToolkit().getImage("src/org/itstep/Icon/book.png");
+        mainFrame.setIconImage(icon);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // размещение элементов окна
 
@@ -53,37 +57,44 @@ public class MainForm {
         patronymicEdit = new JTextField();
         patronymicEdit.setBounds(105, 100, 140, 20);
         mainFrame.add(patronymicEdit);
-        // домашний телефон
-        JLabel phoneNumberHomeLabel = new JLabel("Дом. телефон:");
+        // мобильный телефон
+        JLabel phoneNumberHomeLabel = new JLabel("Моб. телефон:");
         phoneNumberHomeLabel.setBounds(260, 40, 255, 20);
         mainFrame.add(phoneNumberHomeLabel);
         phoneNumberHomeEdit = new JTextField();
-        phoneNumberHomeEdit.setBounds(360, 40, 140, 20);
+        phoneNumberHomeEdit.setBounds(360, 70, 140, 20);
         mainFrame.add(phoneNumberHomeEdit);
-        // рабочий телефон
-        JLabel phoneNumberWorkLabel = new JLabel("Раб. телефон:");
-        phoneNumberWorkLabel.setBounds(260, 70, 255, 20);
-        mainFrame.add(phoneNumberWorkLabel);
-        phoneNumberWorkEdit = new JTextField();
-        phoneNumberWorkEdit.setBounds(360, 70, 140, 20);
-        mainFrame.add(phoneNumberWorkEdit);
-        // мобильный телефон
-        JLabel phoneNumberMobilLabel = new JLabel("Моб. телефон:");
-        phoneNumberMobilLabel.setBounds(260, 100, 255, 20);
+        // домашний телефон
+        JLabel phoneNumberMobilLabel = new JLabel("Дом. телефон:");
+        phoneNumberMobilLabel.setBounds(260, 70, 255, 20);
         mainFrame.add(phoneNumberMobilLabel);
         phoneNumberMobilEdit = new JTextField();
-        phoneNumberMobilEdit.setBounds(360, 100, 140, 20);
+        phoneNumberMobilEdit.setBounds(360, 40, 140, 20);
         mainFrame.add(phoneNumberMobilEdit);
-        // E-mail
-        JLabel faxLabel = new JLabel("E-mail:");
+        // рабочий телефон
+        JLabel phoneNumberWorkLabel = new JLabel("Раб. телефон:");
+        phoneNumberWorkLabel.setBounds(260, 100, 255, 20);
+        mainFrame.add(phoneNumberWorkLabel);
+        phoneNumberWorkEdit = new JTextField();
+        phoneNumberWorkEdit.setBounds(360, 100, 140, 20);
+        mainFrame.add(phoneNumberWorkEdit);
+        // fax
+        JLabel faxLabel = new JLabel("Факс:");
         faxLabel.setBounds(260, 130, 255, 20);
         mainFrame.add(faxLabel);
+        faxEdit = new JTextField();
+        faxEdit.setBounds(360, 130, 140, 20);
+        mainFrame.add(faxEdit);
+        // E-mail
+        JLabel eMailLabel = new JLabel("E-mail:");
+        eMailLabel.setBounds(260, 160, 255, 20);
+        mainFrame.add(eMailLabel);
         eMailEdit = new JTextField();
-        eMailEdit.setBounds(360, 130, 140, 20);
+        eMailEdit.setBounds(360, 160, 140, 20);
         mainFrame.add(eMailEdit);
         // список телефонов
         JLabel listLabel = new JLabel("Список телефонов:");
-        listLabel.setBounds(40, 150, 255, 20);
+        listLabel.setBounds(40, 180, 255, 20);
         mainFrame.add(listLabel);
 
         //формарование данных для таблицы
@@ -91,8 +102,8 @@ public class MainForm {
         tableModel = new PersonTableModel();
         phoneTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(phoneTable);
-        setColumnWidths(phoneTable, 20, 115, 115, 115, 115, 115, 115, 115);
-        scrollPane.setBounds(20, 170, 845, 420);
+        setColumnWidths(phoneTable, 20, 122, 122, 122, 122, 122, 122, 122, 122, 122);
+        scrollPane.setBounds(20, 200, 1145, 420);
         mainFrame.add(scrollPane);
         enterDataTable(tableModel);
         // реакция на событие в таблице
@@ -105,50 +116,73 @@ public class MainForm {
             String sPhoneNumberWork = "";
             String sPhoneNumberMobil = "";
             String sFax = "";
+            String sMail = "";
             int[] selectedRows = phoneTable.getSelectedRows();
             for (int selIndex : selectedRows) {
                 TableModel model = phoneTable.getModel();
                 sFamily = (String) model.getValueAt(selIndex, 1);
                 sName = (String) model.getValueAt(selIndex, 2);
                 sPatronymic = (String) model.getValueAt(selIndex, 3);
-                sPhoneNumberHome = (String) model.getValueAt(selIndex, 4);
-                sPhoneNumberWork = (String) model.getValueAt(selIndex, 5);
-                sPhoneNumberMobil = (String) model.getValueAt(selIndex, 6);
-                sFax = (String) model.getValueAt(selIndex, 7);
+                sPhoneNumberMobil = (String) model.getValueAt(selIndex, 5);
+                sPhoneNumberHome = (String) model.getValueAt(selIndex, 6);
+                sPhoneNumberWork = (String) model.getValueAt(selIndex, 7);
+                sMail = (String) model.getValueAt(selIndex, 8);
+                sFax = (String) model.getValueAt(selIndex, 9);
             }
             familyEdit.setText(sFamily);
             nameEdit.setText(sName);
             patronymicEdit.setText(sPatronymic);
+            phoneNumberMobilEdit.setText(sPhoneNumberMobil);
             phoneNumberHomeEdit.setText(sPhoneNumberHome);
             phoneNumberWorkEdit.setText(sPhoneNumberWork);
-            phoneNumberMobilEdit.setText(sPhoneNumberMobil);
-            eMailEdit.setText(sFax);
+            eMailEdit.setText(sMail);
+            faxEdit.setText(sFax);
         });
 
         // Установка размеров окна
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        mainFrame.setSize(900, 650);
-        int x = (int) ((screenSize.getWidth() - mainFrame.getWidth()) / 2);
-        int y = (int) ((screenSize.getHeight() - mainFrame.getHeight()) / 2);
-        mainFrame.setLocation(x, y);
-
+        mainFrame.setSize(1200, 650);
+        mainFrame.setLocationRelativeTo(null);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Реакция окна на щелчок на системной пиктограмме закрытия окна:
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // кнопки приложения
         // кнопка "Добавить"
         JButton addPerson = new JButton("Добавить запись");
-        addPerson.setBounds(600, 40, 200, 25);
+        addPerson.setBounds(800, 40, 200, 25);
         addPerson.setIcon(new ImageIcon("src/org/itstep/Icon/add user.png"));
-        addPerson.setActionCommand("Нажата кнопка \"Добавить\"");
-
-        // обработчик кнопки "Добавить"/////////////////////////////////////////////////////////////////////////////////
-        addPerson.addActionListener(e -> FrameAddPerson.show());
+        addPerson.addActionListener(e -> FrameAddPerson.showAddPerson());
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         mainFrame.add(addPerson);
+        // кнопка "Изменить"
+        JButton editPerson = new JButton("Изменить запись");
+        editPerson.setBounds(800, 70, 200, 25);
+        editPerson.setIcon(new ImageIcon("src/org/itstep/Icon/insert.png"));
+        editPerson.addActionListener(e -> {
+            if (familyEdit.getText().length() == 0) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Выберите из списка пользователя",
+                        "Внимание!!!",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            FrameEditPerson.showEditPerson(
+                    familyEdit.getText(),
+                    nameEdit.getText(),
+                    patronymicEdit.getText(),
+                    phoneNumberMobilEdit.getText(),
+                    phoneNumberHomeEdit.getText(),
+                    phoneNumberWorkEdit.getText(),
+                    faxEdit.getText(),
+                    eMailEdit.getText());
+        });
+        mainFrame.add(editPerson);
+
         // кнопка "Удалить"
         JButton deletePerson = new JButton("Удалить запись");
-        deletePerson.setBounds(600, 70, 200, 25);
+        deletePerson.setBounds(800, 100, 200, 25);
         deletePerson.setIcon(new ImageIcon("src/org/itstep/Icon/remove user.png"));
 
         // обработчик кнопки "удалить"
@@ -157,7 +191,7 @@ public class MainForm {
         mainFrame.add(deletePerson);
         // кнопка "Обновить"
         JButton updatePerson = new JButton("Обновить данные");
-        updatePerson.setBounds(600, 100, 200, 25);
+        updatePerson.setBounds(800, 130, 200, 25);
         updatePerson.setIcon(new ImageIcon("src/org/itstep/Icon/update.png"));
         // обработчик кнопки "Обновить"/////////////////////////////////////////////////////////////////////////////////
         updatePerson.addActionListener(e -> enterDataTable(tableModel));
@@ -165,30 +199,33 @@ public class MainForm {
         mainFrame.add(updatePerson);
         // кнопка "Поиск"
         JButton searchPerson = new JButton("Поиск");
-        searchPerson.setBounds(600, 130, 200, 25);
+        searchPerson.setBounds(800, 160, 200, 25);
         searchPerson.setIcon(new ImageIcon("src/org/itstep/Icon/search.png"));
         searchPerson.addActionListener(e -> {
             String result = (String) JOptionPane.showInputDialog(
                     null,
-                    "Введите фамилию персоны",
+                    "Введите Имя и/или номер телефона персоны",
                     "ВНИМАНИЕ",
                     JOptionPane.QUESTION_MESSAGE,
                     null, null, null);
-            if (!result.equals("")){
+            if (!result.equals("")) {
                 tableModel.clearData();
                 int i = 0;
-                for (Person person : persons.getPersons()){
+                for (Person person : persons.getPersons()) {
                     String s = person.toString();
                     if (s.contains(result)) {
-                        String[] str = new String[8];
+                        String[] str = new String[10];
                         str[0] = String.valueOf(i + 1);
                         str[1] = person.getFamily();
                         str[2] = person.getName();
                         str[3] = person.getPatronymic();
-                        str[4] = person.getPhoneMobil();
-                        str[5] = person.getPhoneHome();
-                        str[6] = person.getPhoneWork();
-                        str[7] = person.geteMail();
+                        String date = new SimpleDateFormat("dd-MM-yyyy").format(person.getBirthday());
+                        str[4] = date;
+                        str[5] = person.getPhoneMobil();
+                        str[6] = person.getPhoneHome();
+                        str[7] = person.getPhoneWork();
+                        str[8] = person.getEmail();
+                        str[9] = person.getPhoneFax();
                         tableModel.addData(str);
                         i++;
                     }
@@ -199,11 +236,11 @@ public class MainForm {
         // Отображение окна:
         mainFrame.setLayout(null);
         JPanel panel = new JPanel();
-        panel.setBounds(20, 180, 900, 600);
-        panel.setBounds(5, 5, 875, 600);
+        panel.setBounds(20, 180, 1200, 600);
+        panel.setBounds(5, 5, 1175, 600);
         panel.setBackground(Color.gray);
         mainFrame.add(panel);
-        mainFrame.setResizable(false);
+        mainFrame.setResizable(true);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
     }
@@ -223,22 +260,26 @@ public class MainForm {
 
         int i = 0;
         for (Person person : persons.getPersons()) {
-            String[] str = new String[8];
+            String[] str = new String[10];
             str[0] = String.valueOf(i + 1);
             str[1] = person.getFamily();
             str[2] = person.getName();
             str[3] = person.getPatronymic();
-            str[4] = person.getPhoneMobil();
-            str[5] = person.getPhoneHome();
-            str[6] = person.getPhoneWork();
-            str[7] = person.geteMail();
+            String date = new SimpleDateFormat("dd-MM-yyyy").format(person.getBirthday());
+            str[4] = date;
+            str[5] = person.getPhoneMobil();
+            str[6] = person.getPhoneHome();
+            str[7] = person.getPhoneWork();
+            str[8] = person.getEmail();
+            str[9] = person.getPhoneFax();
 
             tableModel.addData(str);
             i++;
         }
     }
-    public void deletePerson(){
-        if (familyEdit.getText().length() == 0){
+
+    public void deletePerson() {
+        if (familyEdit.getText().length() == 0) {
             JOptionPane.showMessageDialog(
                     null,
                     "Выберите из списка пользователя",
@@ -256,12 +297,10 @@ public class MainForm {
                 YES_NO_OPTION);
         try {
             if (result == JOptionPane.YES_OPTION) {
-                for (Person person : persons.getPersons()){
-                    String s = person.toString();
-                    String str = person.getFamily();
-                    if (!person.getName().equals("")) str = str +" " + person.getName();
-                    if (!person.getPatronymic().equals("")) str = str +" " + person.getPatronymic();
-                    if (s.contains(str)) {
+                for (Person person : persons.getPersons()) {
+                    if ((Objects.equals(familyEdit.getText(), person.getFamily())) &&
+                            (Objects.equals(nameEdit.getText(), person.getName())) &&
+                            (Objects.equals(patronymicEdit.getText(), person.getPatronymic()))) {
                         persons.removePerson(person);
                         break;
                     }
@@ -275,6 +314,5 @@ public class MainForm {
                     "Внимание!!!",
                     JOptionPane.WARNING_MESSAGE);
         }
-
     }
 }

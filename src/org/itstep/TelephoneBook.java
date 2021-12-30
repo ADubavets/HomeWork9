@@ -9,17 +9,19 @@ import java.io.File;
 
 public class TelephoneBook {
     public static Persons persons;
+
     public static void main(String[] args) {
 
         readXML();
         new MainForm();
     }
-    public static void readXML(){
+
+    public static void readXML() {
         persons = null;
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Persons.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            persons = (Persons) jaxbUnmarshaller.unmarshal( new File("src/org/itstep/Data/persons.xml"));
+            persons = (Persons) jaxbUnmarshaller.unmarshal(new File("src/org/itstep/Data/persons.xml"));
             persons.sortPersons();
         } catch (JAXBException e) {
             JOptionPane.showMessageDialog(
@@ -31,7 +33,8 @@ public class TelephoneBook {
             new MainForm();
         }
     }
-    public static void writeXML(){
+
+    public static void writeXML() {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Persons.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

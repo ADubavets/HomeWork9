@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <persons>
     <person>
-        <family>Дубовец</family>
-        <name>Андрей</name>
-        <patronymic>Федорович</patronymic>
-        <nickname>я</nickname>
-        <birthday>1973-10-28T00:00:00+03:00</birthday>
-        <eMail>daf_73@mail.ru</eMail>
-        <phoneMobil>29-367-53-75</phoneMobil>
-        <phoneHome>68-28-39</phoneHome>
-        <phoneWork>159-159</phoneWork>
-        <phoneFax>-</phoneFax>
+        <id>2</id>
+        <family>Иванов</family>
+        <name>Иван</name>
+        <patronymic>Иванович</patronymic>
+        <birthday>2000-02-02T00:00:00+02:00</birthday>
+        <eMail></eMail>
+        <phoneMobil>+375(29)555-66-33</phoneMobil>
+        <phoneHome>11-55-99</phoneHome>
+        <phoneWork></phoneWork>
+        <phoneFax></phoneFax>
+    </person>
+    <person>
+        <id>5</id>
+        <family>Петров</family>
+        <name>Илья</name>
+        <patronymic>Алексеевич</patronymic>
+        <birthday>2000-02-02T00:00:00+02:00</birthday>
+        <eMail></eMail>
+        <phoneMobil>+375(29)951-62-34</phoneMobil>
+        <phoneHome>25-68-96</phoneHome>
+        <phoneWork></phoneWork>
+        <phoneFax></phoneFax>
+    </person>
+    <person>
+        <id>3</id>
+        <family>Петров</family>
+        <name>Иван</name>
+        <patronymic>Васильевич</patronymic>
+        <birthday>2000-03-03T00:00:00+02:00</birthday>
+        <eMail>123@mail.ru</eMail>
+        <phoneMobil>+375(25)456-78-96</phoneMobil>
+        <phoneHome>77-44-11</phoneHome>
+        <phoneWork>88-55-22</phoneWork>
+        <phoneFax>88-55-23</phoneFax>
     </person>
 </persons>

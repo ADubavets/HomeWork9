@@ -7,15 +7,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static org.itstep.MainForm.mainFrame;
 import static org.itstep.MainForm.tableModel;
 import static org.itstep.TelephoneBook.persons;
 
 public class FrameAddPerson implements ActionListener {
     private final JFrame frame;
     // кнопки окна
-    private final JButton addPerson;
+    private final JButton addPersonButton;
+    private final JButton exitButton;
     // окна для отображения
     private final JTextField nameEdit;
     private final JTextField familyEdit;
@@ -35,6 +39,7 @@ public class FrameAddPerson implements ActionListener {
         frame.setSize(530, 270);
         int x = (int) ((screenSize.getWidth() - frame.getWidth()) / 2);
         int y = (int) ((screenSize.getHeight() - frame.getHeight()) / 2);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocation(x, y);
         Image icon = frame.getToolkit().getImage("src/org/itstep/Icon/add user.png");
         // фамилия
@@ -61,7 +66,6 @@ public class FrameAddPerson implements ActionListener {
         });
         frame.add(familyEdit);
         // имя
-        // надписи окна
         JLabel nameLabel = new JLabel("Имя:");
         nameLabel.setBounds(20, 70, 100, 20);
         frame.add(nameLabel);
@@ -151,18 +155,21 @@ public class FrameAddPerson implements ActionListener {
         eMailEdit.setBounds(340, 160, 140, 20);
         frame.add(eMailEdit);
         // кнопка "Добавить"
-        addPerson = new JButton("Добавить запись");
-        addPerson.setBounds(40, 190, 200, 25);
-        addPerson.setIcon(new ImageIcon("src/org/itstep/Icon/add user.png"));
-        addPerson.setEnabled(false);
-        addPerson.addActionListener(this::actionAddPerson);
-        frame.add(addPerson);
-        // кнопка "Удалить"
-        JButton noPerson = new JButton("Отмена");
-        noPerson.setBounds(270, 190, 200, 25);
-        noPerson.setIcon(new ImageIcon("src/org/itstep/Icon/remove user.png"));
-        noPerson.addActionListener(e -> frame.setVisible(false));
-        frame.add(noPerson);
+        addPersonButton = new JButton("Добавить запись");
+        addPersonButton.setBounds(40, 190, 200, 25);
+        addPersonButton.setIcon(new ImageIcon("src/org/itstep/Icon/add user.png"));
+        addPersonButton.setEnabled(false);
+        addPersonButton.addActionListener(this::actionAddPerson);
+        frame.add(addPersonButton);
+        // кнопка "Отмена"
+        exitButton = new JButton("Отмена");
+        exitButton.setBounds(270, 190, 200, 25);
+        exitButton.setIcon(new ImageIcon("src/org/itstep/Icon/delete.png"));
+        exitButton.addActionListener(e -> {
+            frame.setVisible(false);
+            mainFrame.setEnabled(true);
+        });
+        frame.add(exitButton);
         JPanel panel = new JPanel();
         panel.setBounds(5, 5, 505, 220);
         panel.setBackground(Color.gray);
@@ -176,28 +183,30 @@ public class FrameAddPerson implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         frame.setVisible(false);
+        mainFrame.setEnabled(true);
     }
 
-    static void show() {
+    static void showAddPerson() {
         new FrameAddPerson();
+        mainFrame.setEnabled(false);
     }
 
-    static boolean checkMobil(String sCorrect) {
+    static boolean checkMobilPhone(String sCorrect) {
         return Pattern.matches("[+]\\d{3}[(]\\d{2}[)]\\d{3}-\\d{2}-\\d{2}", sCorrect);
     }
 
-    static boolean checkCity(String sCorrect) {
+    static boolean checkCityPhone(String sCorrect) {
         return !Pattern.matches("\\d{2}[-]\\d{2}[-]\\d{2}", sCorrect);
     }
 
-    public void changed() {
-        addPerson.setEnabled((!familyEdit.getText().equals("")) &&
+    private void changed() {
+        addPersonButton.setEnabled((!familyEdit.getText().equals("")) &&
                 (!phoneNumberMobilEdit.getText().equals("")) &&
                 (!birthdayEdit.getText().equals("")));
     }
 
     private void actionAddPerson(ActionEvent e) {
-        if (!checkMobil(
+        if (!checkMobilPhone(
                 phoneNumberMobilEdit.getText())) {
             JOptionPane.showMessageDialog(
                     null,
@@ -207,8 +216,9 @@ public class FrameAddPerson implements ActionListener {
             phoneNumberMobilEdit.requestFocus();
             return;
         }
-        if (!phoneNumberHomeEdit.getText().equals(""))
-            if (checkCity(phoneNumberHomeEdit.getText())) {
+        if (searchPerson(phoneNumberMobilEdit.getText()) == true) return;
+        if (!phoneNumberHomeEdit.getText().equals("")) {
+            if (checkCityPhone(phoneNumberHomeEdit.getText())) {
                 JOptionPane.showMessageDialog(
                         null,
                         "Введите корректно номер телефона, например: ХХ-ХХ-ХХ",
@@ -217,8 +227,10 @@ public class FrameAddPerson implements ActionListener {
                 phoneNumberHomeEdit.requestFocus();
                 return;
             }
-        if (!phoneNumberWorkEdit.getText().equals(""))
-            if (checkCity(phoneNumberWorkEdit.getText())) {
+            if (searchPerson(phoneNumberHomeEdit.getText()) == true) return;
+        }
+        if (!phoneNumberWorkEdit.getText().equals("")) {
+            if (checkCityPhone(phoneNumberWorkEdit.getText())) {
                 JOptionPane.showMessageDialog(
                         null,
                         "Введите корректно номер телефона, например: ХХ-ХХ-ХХ",
@@ -227,8 +239,10 @@ public class FrameAddPerson implements ActionListener {
                 phoneNumberWorkEdit.requestFocus();
                 return;
             }
-        if (!faxEdit.getText().equals(""))
-            if (checkCity(faxEdit.getText())) {
+            if (searchPerson(phoneNumberWorkEdit.getText()) == true) return;
+        }
+        if (!faxEdit.getText().equals("")) {
+            if (checkCityPhone(faxEdit.getText())) {
                 JOptionPane.showMessageDialog(
                         null,
                         "Введите корректно номер телефона, например: ХХ-ХХ-ХХ",
@@ -237,6 +251,8 @@ public class FrameAddPerson implements ActionListener {
                 faxEdit.requestFocus();
                 return;
             }
+            if (searchPerson(faxEdit.getText()) == true) return;
+        }
         Person person;
         try {
             person = new Person(
@@ -263,5 +279,55 @@ public class FrameAddPerson implements ActionListener {
             birthdayEdit.requestFocus();
         }
         frame.setVisible(false);
+        mainFrame.setEnabled(true);
+    }
+
+    public boolean searchPerson(String phone) {
+        boolean result = false;
+        int question;
+        for (Person person : persons.getPersons()) {
+            String s = person.toString();
+            if (s.contains(phone)) {
+                if (Objects.equals(person.getPhoneMobil(), phone)) {
+                    question = JOptionPane.showConfirmDialog(
+                            null,
+                            "Номер телефона " + phone + " повторяется. Вы желаете сохранить в этой записи?",
+                            "Внимание!!!",
+                            YES_NO_OPTION);
+                    if (question == JOptionPane.NO_OPTION) result = true;
+                    break;
+                }
+                if (Objects.equals(person.getPhoneHome(), phone)) {
+                    question = JOptionPane.showConfirmDialog(
+                            null,
+                            "Номер телефона " + phone + " повторяется. Вы желаете сохранить в этой записи?",
+                            "Внимание!!!",
+                            YES_NO_OPTION);
+                    if (question == JOptionPane.NO_OPTION) result = true;
+                    break;
+                }
+
+                if (Objects.equals(person.getPhoneWork(), phone)) {
+                    question = JOptionPane.showConfirmDialog(
+                            null,
+                            "Номер телефона " + phone + " повторяется. Вы желаете сохранить в этой записи?",
+                            "Внимание!!!",
+                            YES_NO_OPTION);
+                    if (question == JOptionPane.NO_OPTION) result = true;
+                    break;
+                }
+                if (Objects.equals(person.getPhoneFax(), phone)) {
+                    question = JOptionPane.showConfirmDialog(
+                            null,
+                            "Номер телефона " + phone + " повторяется. Вы желаете сохранить в этой записи?",
+                            "Внимание!!!",
+                            YES_NO_OPTION);
+                    if (question == JOptionPane.NO_OPTION) result = true;
+                    break;
+                }
+
+            }
+        }
+        return result;
     }
 }

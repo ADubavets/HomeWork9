@@ -5,7 +5,7 @@ import javax.swing.table.AbstractTableModel;
 import static org.itstep.TelephoneBook.writeXML;
 
 public class PersonTableModel extends AbstractTableModel {
-    private int columnCount = 8;
+    private final int columnCount = 10;
     private Persons dataArrayList;
 
     PersonTableModel(){
@@ -31,10 +31,12 @@ public class PersonTableModel extends AbstractTableModel {
             case 1: return "Фамилия";
             case 2: return "Имя";
             case 3: return "Отчество";
-            case 4: return "Моб. телефон";
-            case 5: return "Дом. телефон";
-            case 6: return "Раб. телефон";
-            case 7: return "E-mail";
+            case 4: return "Дата рождения";
+            case 5: return "Моб. телефон\"";
+            case 6: return "Дом. телефон";
+            case 7: return "Раб. телефон";
+            case 8: return "E-mail";
+            case 9: return "Факс";
         }
         return "";
     }
@@ -44,6 +46,7 @@ public class PersonTableModel extends AbstractTableModel {
         String[] rows = (String[]) dataArrayList.get(rowIndex);
         return rows[columnIndex];
     }
+
     public void addData(String[] row){
         String[]rowTable = new String[getColumnCount()];
         rowTable = row;
